@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <h1>Users</h1>
+
+    <ul>
+        {% for x in myusers %}
+            <li><a href = "info/id:{{x.id}}"> Name: {{x.first_name}} {{x.last_name}}<br></a></li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>

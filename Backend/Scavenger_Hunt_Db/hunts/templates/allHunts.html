@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+    <h1>All Hunts</h1>
+
+    <ul>
+        {% for x in allhunts %}
+            <li> Name: {{x.title}}<br> Total Steps: {{x.total_steps}}</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>
