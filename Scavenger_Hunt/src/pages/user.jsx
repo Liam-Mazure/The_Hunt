@@ -29,9 +29,9 @@ function User(){
     if (!userData) return <p>Loading...</p>
 
     return(
-        <div class = "flex flex-col items-center">
-            <div class = "text-yellow-500 bg-purple-600 border-yellow-500 border-1 rounded-sm p-2 m-2 w-1/2">
-                <h1 class = "">Current User: </h1>
+        <div className = "flex flex-col items-center">
+            <div className = "text-yellow-500 bg-purple-600 border-yellow-500 border-1 rounded-sm p-2 m-2 w-1/2">
+                <h1 className = "">Current User: </h1>
                         
                 <h1>First Name: {userData.first_name}</h1>
 

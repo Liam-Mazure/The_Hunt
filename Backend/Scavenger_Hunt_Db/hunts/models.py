@@ -6,8 +6,8 @@ class Hunt(models.Model):
     total_steps = models.IntegerField()
 
 class HuntStep(models.Model):
-    name = models.ForeignKey(Hunt, on_delete=models.CASCADE)
+    hunt = models.ForeignKey(Hunt, related_name='hunt_steps', on_delete=models.CASCADE)
     step = models.IntegerField()
     clue = models.TextField(max_length=500)
-    img = models.ImageField()
+    img = models.ImageField(upload_to='huntsteps/')
     hint = models.TextField(max_length = 300)

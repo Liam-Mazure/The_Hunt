@@ -5,8 +5,19 @@
     <h1>All Hunts</h1>
 
     <ul>
-        {% for x in allhunts %}
-            <li> Name: {{x.title}}<br> Total Steps: {{x.total_steps}}</li>
+        {% for hunt in allhunts %}
+            <h2> Name: {{hunt.title}}<br> Total Steps: {{hunt.total_steps}}</h2>
+            <ul>
+                {% for step in hunt.hunt_steps.all %}
+                    <li>
+                        <h3>Name: {{step.name}}</h3>
+                        <img src = '{{step.img.url}}' alt = "Step Img">
+                        <p>Clue: {{step.clue}}</p>
+                        <p>Hint: {{step.hint}}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+
         {% endfor %}
     </ul>
 
