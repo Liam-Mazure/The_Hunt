@@ -74,9 +74,22 @@ class DeleteHuntStep(APIView):
         except Exception as e:
             print(f"Unexpected error: {e}")
             return Response({'error': 'Server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-def edit(request):
-    return HttpResponse("Edit Hunt")
+        
+class UpdateHunt(APIView):
+    def patch(self,request,*args, **kwargs ):
+        hunt_id = kwargs.get('id')
+        print(hunt_id)
+        try:
+            hunt = Hunt.objects.get(id = hunt_id)
+        except Hunt.DoesNotExist:
+            return Response(status = 404)
+        
+        serializer = HuntSerializer(hunt, data = request.data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status = 400)
+        
 
 def play(request):
     return HttpResponse("Play Hunt")

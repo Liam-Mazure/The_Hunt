@@ -1,9 +1,8 @@
-import {React, useEffect, useState} from "react"
-import ViewHunts from "../components/viewHunts"
-import axios from "axios"
+import { useEffect, useState } from "react";
+import ViewHunts from "../components/viewHunts";
 
-function Play(){
-    const [play, setPlay] = useState(true)
+function EditHunts(){
+
     const [huntList, setHuntList] = useState([])
     const [huntData, setHuntData] = useState(null)
 
@@ -33,14 +32,14 @@ function Play(){
 
     return(
         <div>
-            <h1 className="flex place-content-center font-bold text-purple-600 text-shadow-2xs text-shadow-yellow-500">Play Hunts</h1>
+            <h1 className="flex place-content-center font-bold text-purple-600 text-shadow-2xs text-shadow-yellow-500">Edit Hunts</h1>
             <div className="flex flex-wrap p-5 m-5"> 
                 {huntList.map(hunt => (
-                    <ViewHunts key={hunt.id} hunt={hunt}/>
+                    <ViewHunts key={hunt.id} hunt={hunt} />
                 ))}
             </div>
         </div>
     )
 }
 
-export default Play
+export default EditHunts

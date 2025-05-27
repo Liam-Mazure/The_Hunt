@@ -40,6 +40,21 @@ function CreateHunt() {
         }
     }
 
+    const handleAddStep = async (stepCount) => {
+        try{
+
+            const response = await axios.patch(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/update/${huntId}`, {total_steps : stepCount})
+
+            console.log('Step added: ', response.data)
+            if(response.data && response){
+                alert('Hunt Step Added')
+            }
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
     const addStepClick = () => {
         if(!huntId){
             alert("Created the hunt before adding steps")
@@ -57,6 +72,7 @@ function CreateHunt() {
 
     const saveStepClick = (idToSave, updatedDate) => {
         setStepList(stepList => stepList.map(step => step.id === idToSave ? {...step, ...updatedDate, isSaved:true} : step))
+        handleAddStep(stepCount)
     }
 
 
