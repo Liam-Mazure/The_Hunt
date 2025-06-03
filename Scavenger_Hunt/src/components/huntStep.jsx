@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from "react";
 import deleteStepIcon from "../images/orng-close-icon.svg"
 import axios from 'axios'
+import { useParams } from "react-router-dom";
 
 
-function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, setPlay}){
-    const play = setPlay
+function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, isPlayMode, isEditMode}){
+    const [isPlay, setIsPlay] = useState(isPlayMode)
     const [saved, setSaved] = useState(isSaved)
-    const [toEdit, setToEdit] = useState(false)
+    const [isEdit, setIsEdit] = useState(isEditMode)
     const [uploadImg, setUploadImg] = useState(null)
     const [stepData, setStepData] = useState({
         clue : '',
         img : '',
         hint : '',
     })
+    console.log("Play: ", isPlay)
+    console.log("Saved: ", saved)
+    console.log("Edit: ", isEdit)
 
     useEffect(() => {
-        if(isSaved){
+        if(saved){
             setStepData({
                 clue : clue || '',
                 img : img || '',
@@ -69,7 +73,9 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, s
             if(response && response.data){
                 alert('Step Created')
                 setSaved(true);
-                onSave({...stepData, isSaved: true})
+                if(!isEdit){
+                    onSave({...stepData, isSaved: true})
+                }
             }
         }
         catch(error){
@@ -79,8 +85,16 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, s
     }
 
     const handleSaveClick = () => {
-        onSave(stepData)
-        handleStepSubmit()
+        if(!isEdit){
+            onSave(stepData)
+            handleStepSubmit()
+        }
+        else{
+            handleStepUpdate()
+        }
+        setSaved(true)
+        setIsEdit(false)
+        setIsPlay(true)
     }
 
     const handleDeleteSubmit = async () => {
@@ -105,17 +119,44 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, s
         onDelete(stepId)
     }
 
+    const handleEditClick = () => {
+        setIsEdit(true)
+        setIsPlay(false)
+        setSaved(false)
+    }
+
+    const handleStepUpdate = async () => {
+        const formData = new FormData();
+        formData.append('clue', stepData.clue);
+        formData.append('hint', stepData.hint);
+        if(uploadImg instanceof File){
+            formData.append('img', uploadImg);
+        }
+        
+        try{
+            const response = await axios.patch(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/list/${huntId}/update/${stepId}`, formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    }
+                }
+            )
+            console.log(response)
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
     return(
         <div id = {`huntStep-${huntId}`} className = "flex flex-col bg-purple-600 text-yellow-500 p-2 m-5 rounded-2xl w-1/2">
-            {!play &&(
-                isSaved &&(
-                        <button onClick={handleDelete}><img src = {deleteStepIcon} className="place-self-end hover:cursor-pointer"/></button>
-                )
+            {isEdit && saved && !isPlay &&(
+                <button onClick={handleDelete}><img src = {deleteStepIcon} className="place-self-end hover:cursor-pointer"/></button>
             )}
-            <h1>Hunt Step: {stepId}</h1>
+            <h1>Hunt Step: </h1>
             <div className = "flex flex-col">
 
-                {!isSaved && (
+                {!saved && (
                     <input className="hover:cursor-pointer font-bold" type="file" id = "img" name = "img" accept="image/*" onChange={handleImgAdded}/>
                 )}
 
@@ -126,34 +167,36 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, s
                 )}
 
                 <label htmlFor = "clue">Clue: </label>
-                {!play ? (
-                    <textarea className = "bg-white rounded" id = "clue" name="clue" readOnly = {isSaved} onChange={handleStepChange}></textarea>
+                {isPlay ? (
+                    <textarea className = "bg-white rounded" id = "clue" name="clue" readOnly = {saved} onChange={handleStepChange}></textarea>
                 ) : (
-                    <textarea className = "bg-white rounded" id = "clue" name="clue" readOnly = {isSaved} onChange={handleStepChange} value={stepData.clue}></textarea>
+                    <textarea className = "bg-white rounded" id = "clue" name="clue" readOnly = {saved} onChange={handleStepChange} value={stepData.clue}></textarea>
                 )}
                 
 
                 <label htmlFor = "hint">Hint: </label>
-                {!play ? (
-                    <textarea className = "bg-white rounded" id = "hint" name="hint" readOnly = {isSaved} onChange={handleStepChange}></textarea>
+                {isPlay ? (
+                    <textarea className = "bg-white rounded" id = "hint" name="hint" readOnly = {saved} onChange={handleStepChange}></textarea>
                 ) : (
-                    <textarea className = "bg-white rounded" id = "hint" name="hint" readOnly = {isSaved} onChange={handleStepChange} value={stepData.hint}></textarea>
+                    <textarea className = "bg-white rounded" id = "hint" name="hint" readOnly = {saved} onChange={handleStepChange} value={stepData.hint}></textarea>
                 )}
                 
 
-                {!isSaved && (
+                {!saved && (
                     <>
                         <button type = "button" className = "bg-yellow-500 text-purple-600 font-bold m-2 rounded-2xl hover:bg-green-600 hover:text-yellow-500" onClick={handleSaveClick}>Save</button>
                         <button className = "bg-yellow-500 text-purple-600 font-bold m-2 rounded-2xl hover:bg-red-600 hover:text-yellow-500" onClick={handleDelete}>Delete</button>
                     </>
                 )}
 
-                {/* {toEdit && (
-                    <>
-                        <button type = "button" className = "bg-yellow-500 text-purple-600 font-bold m-2 rounded-2xl hover:bg-green-600 hover:text-yellow-500" >Edit</button>
-                        
-                    </>
-                )} */}
+                {isEdit && (
+                    saved &&(
+                        <>
+                            <button type = "button" className = "bg-yellow-500 text-purple-600 font-bold m-2 rounded-2xl hover:bg-green-600 hover:text-yellow-500" onClick={handleEditClick}>Edit</button>
+                            
+                        </>
+                    )
+                )}
 
             </div>
         </div>

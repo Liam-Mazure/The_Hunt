@@ -6,6 +6,7 @@ import Play from './pages/playHunts'
 import User from './pages/user'
 import CreateHunt from './pages/createHunt'
 import EditHunts from './pages/editHunts'
+import EditHunt from './pages/editHunt'
 import EditUser from './pages/editUser'
 import ViewHunts from './components/viewHunts'
 import './App.css'
@@ -25,8 +26,9 @@ function App() {
           <Route path = '/user/createUser' element = {<CreateUser/>}/>
           <Route path = '/user/editUser' element = {<EditUser/>}/>
           <Route path = '/hunt/create/' element = {<CreateHunt/>}/>
-          <Route path = '/hunt/edit/' element = {<EditHunts/>}/>
-          <Route path = '/hunt/list' element = {<Play/>}/>
+          <Route path = '/hunt/list/edit' element = {<EditHunts/>}/>
+          <Route path = '/hunt/list/:huntId/update' element = {<EditHunt/>}/>
+          <Route path = '/hunt/list/play' element = {<Play/>}/>
           <Route path = '/hunt/list/:huntId' element = {<PlayHunt/>}/>
           <Route path = '/user/all/info/:id' element = {<User/>}/>
       </Routes>

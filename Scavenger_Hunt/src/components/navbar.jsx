@@ -22,8 +22,8 @@ function Navbar(){
 
                 <div className = "flex text-yellow-500 space-x-5 drop-shadow-lg invisible sm:visible m-2">
                     <a className = "hover:underline" href = "/hunt/create/">Create</a>
-                    <a className = "hover:underline" href = "/hunt/list/">Play</a>
-                    <a className = "hover:underline" href = "/hunt/edit/">Edit</a>
+                    <a className = "hover:underline" href = "/hunt/list/play">Play</a>
+                    <a className = "hover:underline" href = "/hunt/list/edit">Edit</a>
                     <a className = "hover:underline" href = "/user/all/info/id:1">User Info</a>
                 </div>
             </>
@@ -34,8 +34,8 @@ function Navbar(){
                 <div className = "flex flex-col text-yellow-500 space-x-80 drop-shadow-lg">
                     <a className = "hover:underline  text-4xl bold" href = "/">The Hunt</a>
                     <a className = "hover:underline m-1" href = "/hunt/create/">Create</a>
-                    <a className = "hover:underline m-1" href = "/hunt/list/">Play</a>
-                    <a className = "hover:underline m-1" href = "/hunt/edit/">Edit</a>
+                    <a className = "hover:underline m-1" href = "/hunt/list/play">Play</a>
+                    <a className = "hover:underline m-1" href = "/hunt/list/edit">Edit</a>
                     <a className = "hover:underline m-1" href = "/user/all/info/id:1">User Info</a>
                 </div>
             </>

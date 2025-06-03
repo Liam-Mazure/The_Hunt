@@ -78,7 +78,7 @@ class DeleteHuntStep(APIView):
 class UpdateHunt(APIView):
     def patch(self,request,*args, **kwargs ):
         hunt_id = kwargs.get('id')
-        print(hunt_id)
+        
         try:
             hunt = Hunt.objects.get(id = hunt_id)
         except Hunt.DoesNotExist:
@@ -90,6 +90,28 @@ class UpdateHunt(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status = 400)
         
+class UpdateHuntStep(APIView):
+    def patch(self,request, hunt_id, step_id):
+        print("Request Data: ", request.data)
+        try:
+            hunt = Hunt.objects.get(id=hunt_id)
+            step = HuntStep.objects.get(id=step_id)
+
+            print("Hunt Id: ", hunt_id)
+            print("Step: ", step)
+
+        
+            serializer = HuntStepsSerializer(step, data = request.data, partial = True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            print("serializer Error: ", serializer.errors)
+            return Response(serializer.errors, status = 400)
+        
+        except Hunt.DoesNotExist:
+            return Response({'error': 'Hunt not found.'}, status=404)
+        except HuntStep.DoesNotExist:
+            return Response({'error': 'Step not found for this hunt.'}, status=404)
 
 def play(request):
     return HttpResponse("Play Hunt")
@@ -104,7 +126,7 @@ def play(request):
 
 def list_all_hunts(request):
     allhunts = Hunt.objects.all()
-    print(f"AllHunts: {allhunts}")
+    # print(f"AllHunts: {allhunts}")
     serializer = HuntSerializer(allhunts, many=True)
     data = {
         'allhunts' : allhunts,

@@ -35,7 +35,7 @@ function EditHunts(){
             <h1 className="flex place-content-center font-bold text-purple-600 text-shadow-2xs text-shadow-yellow-500">Edit Hunts</h1>
             <div className="flex flex-wrap p-5 m-5"> 
                 {huntList.map(hunt => (
-                    <ViewHunts key={hunt.id} hunt={hunt} />
+                    <ViewHunts key={hunt.id} hunt={hunt} step={hunt.step} mode = "edit"/>
                 ))}
             </div>
         </div>
