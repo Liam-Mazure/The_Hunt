@@ -35,7 +35,7 @@ function PlayHunt(){
             <div className="flex flex-col items-center">
                 {stepList && stepList.length > 0 ? (
                     stepList.map(step => (
-                        <Huntstep key = {step.id} stepId={step.step} clue = {step.clue} hint = {step.hint} img = {step.img} huntId = {huntId} isSaved={true} setPlay={true} isEditMode={false}/>
+                        <Huntstep key = {step.id} stepId={step.step} clue = {step.clue} hint = {step.hint} img = {step.img} huntId = {huntId} isSaved={true} setPlay={true} isEditMode={false} onReveal={false} onRevealHintBtn={true}/>
                     ))
                 ) : (
                     <p>No Steps found...</p>

@@ -4,11 +4,13 @@ import axios from 'axios'
 import { useParams } from "react-router-dom";
 
 
-function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, isPlayMode, isEditMode}){
+function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, isPlayMode, isEditMode, onRevealHint, onRevealHintBtn}){
     const [isPlay, setIsPlay] = useState(isPlayMode)
     const [saved, setSaved] = useState(isSaved)
     const [isEdit, setIsEdit] = useState(isEditMode)
     const [uploadImg, setUploadImg] = useState(null)
+    const [revealHint, setRevealHint] = useState(onRevealHint)
+    const [revealHintBtn, setRevealHintBtn] = useState(onRevealHintBtn)
     const [stepData, setStepData] = useState({
         clue : '',
         img : '',
@@ -148,6 +150,10 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, i
         }
     }
 
+    const handleRevealHint = () => {
+        setRevealHint(revealHint => !revealHint)
+    }
+
     return(
         <div id = {`huntStep-${huntId}`} className = "flex flex-col bg-purple-600 text-yellow-500 p-2 m-5 rounded-2xl w-1/2">
             {isEdit && saved && !isPlay &&(
@@ -178,7 +184,13 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, i
                 {isPlay ? (
                     <textarea className = "bg-white rounded" id = "hint" name="hint" readOnly = {saved} onChange={handleStepChange}></textarea>
                 ) : (
-                    <textarea className = "bg-white rounded" id = "hint" name="hint" readOnly = {saved} onChange={handleStepChange} value={stepData.hint}></textarea>
+                    revealHint &&(
+                        <textarea className = "bg-white rounded" id = "hint" name="hint" readOnly = {saved} onChange={handleStepChange} value={stepData.hint}></textarea>
+                    ) 
+                )}
+
+                {!isPlay && !isEdit && revealHintBtn &&(
+                    <button className="bg-yellow-500 text-purple-600 font-bold m-2 rounded-2xl hover:bg-green-600 hover:text-yellow-500" onClick={handleRevealHint}>Reveal Hint</button>
                 )}
                 
 

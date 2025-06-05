@@ -33,8 +33,8 @@ function Play(){
 
     return(
         <div>
-            <h1 className="flex place-content-center font-bold text-purple-600 text-shadow-2xs text-shadow-yellow-500">Play Hunts</h1>
-            <div className="flex flex-wrap p-5 m-5"> 
+            <h1 className="flex place-content-center font-bold text-purple-700 text-shadow-yellow-500 text-shadow-lg text-4xl sm:text-5xl md:text-6xl lg:text-7xl">Play Hunts</h1>
+            <div className="flex flex-wrap justify-center p-5 m-5"> 
                 {huntList.map(hunt => (
                     <ViewHunts key={hunt.id} hunt={hunt} mode = "play"/>
                 ))}

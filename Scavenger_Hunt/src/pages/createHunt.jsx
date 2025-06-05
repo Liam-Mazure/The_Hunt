@@ -2,6 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import Huntstep from "../components/huntStep";
 import axios from 'axios'
+import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette";
 
 function CreateHunt() {
     const [huntCreated, setHuntCreated] = useState(false)
@@ -78,7 +79,7 @@ function CreateHunt() {
 
     return(
         <form className="flex flex-col" onSubmit={handleHuntSubmit} id="huntForm">
-            <h1 className="flex justify-center text-yellow-500 text-shadow-purple-900 text-shadow-xs font-bold text-2xl ">Create Hunt</h1>
+            <h1 className="flex justify-center text-purple-700 text-shadow-yellow-500 text-shadow-lg font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl ">Create Hunt</h1>
 
             <div className="flex justify-evenly items-center m-5">
                 <label className="text-yellow-500 font-bold text-2xl text-shadow-purple-900 text-shadow-xs" htmlFor="title">Hunt Title: </label>
@@ -91,7 +92,7 @@ function CreateHunt() {
             {huntId && (
                 <div className="flex flex-col items-center">
                     {stepList.map(step => (
-                        <Huntstep key={step.id} stepId={step.id} onDelete = {() => removeStepClick(step.id)} onSave = {(updatedDate) => saveStepClick(step.id, updatedDate)} isSaved={step.isSaved} huntId={huntId}/>
+                        <Huntstep key={step.id} stepId={step.id} onDelete = {() => removeStepClick(step.id)} onSave = {(updatedDate) => saveStepClick(step.id, updatedDate)} isSaved={step.isSaved} huntId={huntId} onRevealHint={true} onRevealHintBtn={false}/>
                     ))}
                 </div>
             )}

@@ -12,15 +12,15 @@ function Navbar(){
     }
 
     return(
-        <nav className = "flex justify-around bg-purple-600 border-2 border-yellow-500 items-center text-yellow-500 font-serif text-2xl drop-shadow-lg">
-            {/* Desktop Navagation */}
+        <nav className = "flex justify-between max-w-full w-full bg-purple-600 border-b-2 border-yellow-500 items-center text-yellow-500 font-serif drop-shadow-lg">
+            
+           {/* Desktop Navagation */}
            {mobileOpen &&(
             <>
-                <div>
-                    <a className = "text-2x1 hover:underline text-2x1 sm:text-4xl m-2 bold" href = "/">The Hunt</a>
+                <div className="flex justify-between items-center px-6 py-4">
+                    <a className = "hover:underline text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold" href = "/">The Hunt</a>
                 </div>
-
-                <div className = "flex text-yellow-500 space-x-5 drop-shadow-lg invisible sm:visible m-2">
+                <div className = "hidden sm:flex text-md sm:text-lg md:text-2xl lg:text-4xl text-yellow-500 space-x-10 pb-1 drop-shadow-lg">
                     <a className = "hover:underline" href = "/hunt/create/">Create</a>
                     <a className = "hover:underline" href = "/hunt/list/play">Play</a>
                     <a className = "hover:underline" href = "/hunt/list/edit">Edit</a>
@@ -31,8 +31,8 @@ function Navbar(){
             {/* Mobile Navagation */}
             {!mobileOpen &&(
             <>
-                <div className = "flex flex-col text-yellow-500 space-x-80 drop-shadow-lg">
-                    <a className = "hover:underline  text-4xl bold" href = "/">The Hunt</a>
+                <div className = "flex flex-col items-start text-yellow-500 px-4 pb-2 space-y-2 drop-shadow-lg sm:hidden">
+                    <a className = "hover:underline font-bold m-1" href = "/">The Hunt</a>
                     <a className = "hover:underline m-1" href = "/hunt/create/">Create</a>
                     <a className = "hover:underline m-1" href = "/hunt/list/play">Play</a>
                     <a className = "hover:underline m-1" href = "/hunt/list/edit">Edit</a>
@@ -42,11 +42,11 @@ function Navbar(){
             )}
             {/* Change to rely on breakpoints rather than mobileOpen. Might have issues if user starts via mobile */}
             {mobileOpen &&(
-            <button onClick={toggleNav}><img src = {menu} className="visible hover:cursor-pointer sm:invisible"/></button>
+            <button onClick={toggleNav}><img src = {menu} className="visible min-h-8 min-w-8 hover:cursor-pointer sm:invisible"/></button>
             )}
 
             {!mobileOpen &&(
-            <button onClick={toggleNav}><img src = {closeMenu} className=" fixed top-2 right-2 visible hover:cursor-pointer sm:invisible"/></button>
+            <button onClick={toggleNav}><img src = {closeMenu} className=" fixed min-h-8 min-w-8 top-2 right-2 visible hover:cursor-pointer sm:invisible"/></button>
             )}
         </nav>
     )
