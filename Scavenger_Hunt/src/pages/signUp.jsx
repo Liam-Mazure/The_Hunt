@@ -2,7 +2,8 @@ import React from "react";
 import { useState } from "react";
 import axios, { Axios } from 'axios'
 
-function CreateUser(){
+function SignUp(){
+    
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -19,7 +20,7 @@ function CreateUser(){
         e.preventDefault();
         try{
             console.log(formData)
-            const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/user/create/`, formData);
+            const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/user/signUp/`, formData);
             
             if(response && response.data){
                 alert('User Created')
@@ -36,13 +37,12 @@ function CreateUser(){
         }
     }
 
-
-
-
     return(
         <div className = "flex flex-col items-center text-yellow-500" >
-            <h1>Create User</h1>
-            <form className = "flex flex-col bg-purple-600 w-3/4 rounded m-2 p-2" onSubmit={handleSubmit}>
+            <h1 className="flex place-content-center text-purple-700 text-shadow-yellow-500 text-shadow-lg font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
+                Sign Up
+            </h1>
+            <form className = "flex flex-col bg-purple-600 w-3/4 rounded m-5 p-3" onSubmit={handleSubmit}>
                 <div className = "flex p-1 w-3/4">
                     <label htmlFor = 'first_name'>First Name: </label>
                     <input className = "bg-white rounded" type = 'text' id = 'first_name' name = "first_name" onChange={handleChange}></input>
@@ -69,4 +69,4 @@ function CreateUser(){
     )
 }
 
-export default CreateUser 
+export default SignUp 

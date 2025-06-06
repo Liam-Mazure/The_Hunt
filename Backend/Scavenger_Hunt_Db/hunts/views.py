@@ -63,10 +63,10 @@ class CreateHuntStep(APIView):
 class DeleteHuntStep(APIView):
     def delete(self, request, step_id):
         print(f"Trying to delete HuntStep with ID: {step_id}")
-        hunt_id = request.data.get('hunt')
+
         try:
-            hunt = Hunt.objects.get(id = hunt_id)
-            step = HuntStep.objects.get(id=step_id, hunt=hunt)
+            
+            step = HuntStep.objects.get(id=step_id)
             step.delete()
             return Response({'message':'Step Deleted'},status = status.HTTP_204_NO_CONTENT)
         except HuntStep.DoesNotExist:

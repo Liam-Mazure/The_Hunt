@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
-# from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate
 from .models import User
 from .serializers import UserSerializer
 from django.http import JsonResponse
@@ -13,7 +13,7 @@ from django.template import loader
 def main(request):
     return HttpResponse("Users Main")
 
-def login(request):
+def SignIn(request):
     template = loader.get_template('./authenticate/login.html')
     return HttpResponse(template.render())
 

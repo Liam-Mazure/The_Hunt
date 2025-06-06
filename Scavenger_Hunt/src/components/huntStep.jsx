@@ -100,6 +100,7 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, i
     }
 
     const handleDeleteSubmit = async () => {
+        
         try{
             console.log(`ID to Delete: ${stepId}`)
             const response = await axios.delete(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/deletestep/${stepId}/`, {
@@ -109,6 +110,7 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, i
             })
             if (response.status === 204){
                 console.log("Step Deleted Successfully!")
+                onDelete(stepId)
             }
         }
         catch(error){
@@ -156,7 +158,7 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, i
 
     return(
         <div id = {`huntStep-${huntId}`} className = "flex flex-col bg-purple-600 text-yellow-500 p-2 m-5 rounded-2xl w-1/2">
-            {isEdit && saved && !isPlay &&(
+            {saved && isPlay &&(
                 <button onClick={handleDelete}><img src = {deleteStepIcon} className="place-self-end hover:cursor-pointer"/></button>
             )}
             <h1>Hunt Step: </h1>
@@ -196,8 +198,14 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, i
 
                 {!saved && (
                     <>
-                        <button type = "button" className = "bg-yellow-500 text-purple-600 font-bold m-2 rounded-2xl hover:bg-green-600 hover:text-yellow-500" onClick={handleSaveClick}>Save</button>
-                        <button className = "bg-yellow-500 text-purple-600 font-bold m-2 rounded-2xl hover:bg-red-600 hover:text-yellow-500" onClick={handleDelete}>Delete</button>
+                        <button type = "button" className = "bg-yellow-500 text-purple-600 font-bold m-2 rounded-2xl hover:bg-green-600 hover:text-yellow-500" onClick={handleSaveClick}>
+                            Save
+                        </button>
+                        {isEdit && (
+                            <button className = "bg-yellow-500 text-purple-600 font-bold m-2 rounded-2xl hover:bg-red-600 hover:text-yellow-500" onClick={handleDelete}>
+                                Delete
+                            </button>
+                        )}
                     </>
                 )}
 

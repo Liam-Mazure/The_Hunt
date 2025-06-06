@@ -1,8 +1,12 @@
-import React from "react"
+import React from "react";
 
-function Login(){
+function SignIn(){
     return(
-        <div class = "flex justify-center m-5">
+        <>
+            <h1 className="flex place-content-center text-purple-700 text-shadow-yellow-500 text-shadow-lg font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
+                Sign In
+            </h1>
+            <div class = "flex justify-center m-5">
             <form class = "flex flex-col bg-purple-600 text-yellow-500 border-yellow-500 border-1 rounded-sm p-2">
     
                 <label for = 'email'>Email: </label>
@@ -15,7 +19,8 @@ function Login(){
 
             </form>
         </div>
+        </>
     )
 }
 
-export default Login
+export default SignIn
