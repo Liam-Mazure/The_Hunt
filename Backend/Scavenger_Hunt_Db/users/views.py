@@ -2,12 +2,14 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
 from .models import User
-from .serializers import UserSerializer
+from .serializers import UserSerializer, CustomTokenObtainPairSerializer
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework import generics, status
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 from django.template import loader 
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 def main(request):
@@ -19,23 +21,27 @@ def SignIn(request):
 
 class CreateUser(APIView):
     serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+
     def post(self, request):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
         
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            first_name = serializer.data.get('first_name')
-            last_name = serializer.data.get('last_name')
-            email = serializer.data.get('email')
-            username = serializer.data.get('username')
-            password = serializer.data.get('password')
+            first_name = serializer.validated_data.get('first_name')
+            last_name = serializer.validated_data.get('last_name')
+            email = serializer.validated_data.get('email')
+            username = serializer.validated_data.get('username')
+            password = serializer.validated_data.get('password')
             
             queryset = User.objects.filter(email=email)
             if queryset.exists():
                 return Response({"error": "A user with this email already exists."}, status = status.HTTP_400_BAD_REQUEST)
             else:
-                user = User(first_name = first_name, last_name = last_name, email = email, username = username, password = password)
+                user = User(first_name = first_name, last_name = last_name, email = email, username = username, is_active = True)
+                user.set_password(password)
+        
         user.save()
         return Response({"message": "User created Successfully"}, status=status.HTTP_201_CREATED)
     
@@ -58,3 +64,7 @@ def userInfo(request, id):
         'username': myuser.username,
     }
     return JsonResponse(serializer.data)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

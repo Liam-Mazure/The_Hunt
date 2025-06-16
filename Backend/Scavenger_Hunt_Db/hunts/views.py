@@ -6,6 +6,7 @@ from .serializer import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from django.template import loader
 
@@ -13,6 +14,7 @@ from django.template import loader
 # Create your views here.
 class CreateHunt(APIView):
     serializer_class = HuntSerializer
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         if not request.session.exists(self.request.session.session_key):
             request.session.create()
@@ -61,6 +63,7 @@ class CreateHuntStep(APIView):
         return Response({"error" : "Invalid Data", "Details": serializer.errors})
 
 class DeleteHuntStep(APIView):
+    permission_classes = [IsAuthenticated]
     def delete(self, request, step_id):
         print(f"Trying to delete HuntStep with ID: {step_id}")
 
@@ -116,13 +119,6 @@ class UpdateHuntStep(APIView):
 def play(request):
     return HttpResponse("Play Hunt")
 
-# def list_all_hunts(request):
-#     allhunts = Hunt.objects.prefetch_related('hunt_steps').all()
-#     template = loader.get_template('./allHunts.html')
-#     data = {
-#         'allhunts' : allhunts,
-#     }
-#     return HttpResponse(template.render(data,request))
 
 def list_all_hunts(request):
     allhunts = Hunt.objects.all()
@@ -135,7 +131,7 @@ def list_all_hunts(request):
 
 def list_hunt(request, id):
     hunt = Hunt.objects.get(id=id)
-    serializer = HuntSerializer(hunt)
+    serializer = HuntSerializer(hunt, many=True)
     template = loader.get_template('./allHunts.html')
     data = {
         'title': hunt.title,

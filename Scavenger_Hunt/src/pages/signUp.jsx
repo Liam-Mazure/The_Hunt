@@ -1,9 +1,9 @@
-import React from "react";
+import {useNavigate} from "react-router-dom";
 import { useState } from "react";
 import axios, { Axios } from 'axios'
 
 function SignUp(){
-    
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -25,6 +25,7 @@ function SignUp(){
             if(response && response.data){
                 alert('User Created')
             }
+            navigate("/user/signIn")
         }
         catch(error){
             if (error.response && error.response.data && error.response.data.error){
