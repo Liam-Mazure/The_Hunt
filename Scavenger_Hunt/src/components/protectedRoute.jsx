@@ -50,7 +50,7 @@ function ProtectedRoute({children}){
     }
 
     if(isAuthorized === null){
-        return <div>Loading...</div>
+        return <div className="flex justify-center font-bold text-2xl text-yellow-500 text-shadow-sm text-shadow-purple-700 p-2">Loading...</div>
     }
 
     return isAuthorized ? children : <Navigate to="/user/signIn/"/>

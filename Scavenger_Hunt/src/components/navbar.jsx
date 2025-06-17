@@ -6,7 +6,8 @@ import closeMenu from "../images/orng-close-icon.svg"
 
 function Navbar(){
     const [mobileOpen, setMobileOpen] = useState(true)
-
+    const userId = localStorage.getItem("id")
+    console.log("User ID: ", userId)
     const toggleNav = () => {
         setMobileOpen(!mobileOpen);
     }
@@ -24,7 +25,7 @@ function Navbar(){
                     <a className = "hover:underline" href = "/hunt/create/">Create</a>
                     <a className = "hover:underline" href = "/hunt/list/play">Play</a>
                     <a className = "hover:underline" href = "/hunt/list/edit">Edit</a>
-                    <a className = "hover:underline" href = "/user/all/info/id:1">User Info</a>
+                    <a className = "hover:underline" href = {`/user/all/info/id:${userId}`}>User Info</a>
                 </div>
             </>
             )}
@@ -36,7 +37,7 @@ function Navbar(){
                     <a className = "hover:underline m-1" href = "/hunt/create/">Create</a>
                     <a className = "hover:underline m-1" href = "/hunt/list/play">Play</a>
                     <a className = "hover:underline m-1" href = "/hunt/list/edit">Edit</a>
-                    <a className = "hover:underline m-1" href = "/user/all/info/id:1">User Info</a>
+                    <a className = "hover:underline m-1" href = {`/user/all/info/id:${userId}`}>User Info</a>
                 </div>
             </>
             )}

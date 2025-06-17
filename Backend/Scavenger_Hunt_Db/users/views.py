@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from django.template import loader 
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 def main(request):
@@ -65,6 +66,12 @@ def userInfo(request, id):
     }
     return JsonResponse(serializer.data)
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['id'] = self.user.id
 
+        return data
+    
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer

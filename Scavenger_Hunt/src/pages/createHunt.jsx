@@ -1,8 +1,7 @@
-import React from "react";
 import { useState, useEffect } from "react";
 import Huntstep from "../components/huntStep";
 import axios from 'axios'
-import flattenColorPalette from "tailwindcss/lib/util/flattenColorPalette";
+import api from "../api";
 
 function CreateHunt() {
     const [huntCreated, setHuntCreated] = useState(false)
@@ -27,7 +26,7 @@ function CreateHunt() {
         e.preventDefault();
         try{
             console.log("Submitting Hunt Data: ", huntData);
-            const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/create/`, huntData);
+            const response = await api.post(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/create/`, huntData);
             console.log("Submitted Hunt Data: ", huntData)
             if(response.data && response.data.id){
                 alert('Hunt Created')
@@ -83,11 +82,11 @@ function CreateHunt() {
         <form className="flex flex-col" onSubmit={handleHuntSubmit} id="huntForm">
             <h1 className="flex justify-center text-purple-700 text-shadow-yellow-500 text-shadow-lg font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl">Create Hunt</h1>
 
-            <div className="flex justify-evenly items-center m-5">
+            <div className="flex-row self-center m-2 sm:flex-row">
                 <label className="text-yellow-500 font-bold text-2xl text-shadow-purple-900 text-shadow-xs" htmlFor="title">Hunt Title: </label>
                 <input className = "text-purple-600 font-bold border-yellow-500 border-2 rounded" type="text" id = 'title' name="title" onChange={handleHuntChange}></input>
                 {huntCreated && (
-                    <button type = "button" className = "flex justify-center bg-purple-600 text-yellow-500 p-2 hover:cursor-pointer rounded-2xl" onClick={addStepClick}>Add Step: {stepCount}</button>
+                    <button type = "button" className = " bg-purple-600 text-yellow-500 p-2 m-2 hover:cursor-pointer rounded" onClick={addStepClick}>Add Step: {stepCount}</button>
                 )}
             </div>
             

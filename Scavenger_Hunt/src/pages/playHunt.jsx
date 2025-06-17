@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Huntstep from "../components/huntStep";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import api from "../api";
 
 
 function PlayHunt(){
@@ -11,7 +12,7 @@ function PlayHunt(){
     useEffect(() => {
         const getStepData = async () => {
             try{
-                const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/list/${huntId}`)
+                const response = await api.get(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/list/${huntId}`)
                 console.log("Response: ", response)
                 setStepList(response.data)
                 console.log("StepList: ", stepList)
@@ -31,7 +32,7 @@ function PlayHunt(){
     
     return(
         <>
-            <h1 className="flex place-content-center font-bold text-purple-600">Let the Hunt Begin</h1>
+            <h1 className="flex place-content-center text-purple-700 text-shadow-yellow-500 text-shadow-lg font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl">Let the Hunt Begin</h1>
             <div className="flex flex-col items-center">
                 {stepList && stepList.length > 0 ? (
                     stepList.map(step => (

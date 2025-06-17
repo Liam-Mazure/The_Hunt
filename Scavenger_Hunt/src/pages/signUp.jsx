@@ -43,13 +43,13 @@ function SignUp(){
             <h1 className="flex place-content-center text-purple-700 text-shadow-yellow-500 text-shadow-lg font-bold text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
                 Sign Up
             </h1>
-            <form className = "flex flex-col bg-purple-600 w-3/4 rounded m-5 p-3" onSubmit={handleSubmit}>
-                <div className = "flex p-1 w-3/4">
+            <form className = "flex flex-col font-bold bg-purple-600 w-3/4 rounded m-5 p-3" onSubmit={handleSubmit}>
+                <div className = "flex p-1">
                     <label htmlFor = 'first_name'>First Name: </label>
-                    <input className = "bg-white rounded" type = 'text' id = 'first_name' name = "first_name" onChange={handleChange}></input>
+                    <input className = "bg-white rounded w-1/2" type = 'text' id = 'first_name' name = "first_name" onChange={handleChange}></input>
                 
                     <label className = "m-1" htmlFor = 'last_name'>Last Name: </label>
-                    <input className = "bg-white rounded" type = 'text' id = 'last_name' name = "last_name" onChange={handleChange}></input>
+                    <input className = "bg-white rounded w-1/2" type = 'text' id = 'last_name' name = "last_name" onChange={handleChange}></input>
                 </div>
                 
                 <label htmlFor = 'email'>Email: </label>
@@ -64,7 +64,7 @@ function SignUp(){
                 {/* <label for = 'secondpass'>Confirm Password: </label>
                 <input className = "bg-white rounded" type = 'password' id = 'secondpass' onChange={handleChange}></input> */}
                 
-                <button className = " font-bold m-2 hover:border-2 hover:border-yellow-500 rounded-sm" type = 'submit'>Create</button>
+                <button className = "bg-yellow-500 text-purple-600 hover:bg-yellow-400 font-bold rounded m-3" type = 'submit'>Create</button>
             </form>
         </div>
     )

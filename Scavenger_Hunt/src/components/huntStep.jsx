@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import deleteStepIcon from "../images/orng-close-icon.svg"
 import axios from 'axios'
+import api from "../api";
 import { useParams } from "react-router-dom";
 
 
@@ -65,7 +66,7 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, i
         }
         console.log("Submitted Form Data: ", formData)
         try{
-            const response = await axios.post(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/createstep/`, formData,
+            const response = await api.post(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/createstep/`, formData,
             {
                 headers: {
                     'Content-Type': 'multipart/form-data',
