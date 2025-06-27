@@ -13,7 +13,8 @@ function ViewHunts({hunt, step, mode}){
                     {/* The link to this is the same for play and edit*/}
                     <div>
                         <h1>Title: {hunt.title}</h1>
-                        <p>Total Steps: {hunt.total_steps}</p> 
+                        <p>Total Steps: {hunt.total_steps}</p>
+                        <p>Author: {hunt.author}</p> 
                     </div>
                 </div>
             </a>

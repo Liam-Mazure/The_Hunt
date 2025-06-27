@@ -23,7 +23,7 @@ function App() {
           <Route path = '/' element = {<ProtectedRoute><Home/></ProtectedRoute>} exact/>
           <Route path = '/user/signIn/' element = {<SignIn/>}/>
           <Route path = '/user/signUp/' element = {<SignUp/>}/>
-          <Route path = '/user/editUser' element = {<ProtectedRoute><EditUser/></ProtectedRoute>}/>
+          <Route path = '/user/editUser/' element = {<ProtectedRoute><EditUser/></ProtectedRoute>}/>
           <Route path = '/hunt/create/' element = {<ProtectedRoute><CreateHunt/></ProtectedRoute>}/>
           <Route path = '/hunt/list/edit' element = {<ProtectedRoute><EditHunts/></ProtectedRoute>}/>
           <Route path = '/hunt/list/:huntId/update' element = {<ProtectedRoute><EditHunt/></ProtectedRoute>}/>

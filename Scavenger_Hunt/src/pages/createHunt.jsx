@@ -10,16 +10,15 @@ function CreateHunt() {
     const [huntId, setHuntId] = useState(null)
     const [huntData, setHuntData] = useState({
         title : '',
-        total_steps : '',
     })
 
     const handleHuntChange = e => {
         setHuntData(huntData => ({...huntData, [e.target.name]: e.target.value}))
     }
 
-    useEffect(() => {
-        setHuntData(huntData => ({...huntData, total_steps: stepCount}))
-    }, [stepCount])
+    // useEffect(() => {
+    //     setHuntData(huntData => ({...huntData, total_steps: stepCount}))
+    // }, [stepCount])
 
     const handleHuntSubmit = async e => {
         e.stopPropagation()
@@ -43,7 +42,7 @@ function CreateHunt() {
     const handleAddStep = async (stepCount) => {
         try{
 
-            const response = await axios.patch(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/update/${huntId}`, {total_steps : stepCount})
+            const response = await axios.patch(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/update/${huntId}`)
 
             console.log('Step added: ', response.data)
             if(response.data && response){
@@ -61,7 +60,7 @@ function CreateHunt() {
             return
         }
         const Id = Date.now()
-        setStepCount(stepCount + 1);
+        setStepCount((stepCount) => stepCount + 1);
         setStepList(stepList => [...stepList, {id:Id}])
     };
 

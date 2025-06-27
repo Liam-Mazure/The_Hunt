@@ -29,8 +29,8 @@ function User(){
 
     return(
         <div className = "flex flex-col items-center">
-            <div className = "text-yellow-500 font-bold bg-purple-600 border-yellow-500 border-4 rounded-sm p-3 m-3 w-1/2">
-                <h1>Current User: </h1>
+            <div className = "text-yellow-500 bg-purple-600 border-yellow-500 border-4 rounded-sm p-3 m-3 w-1/2">
+                <h1 className="font-bold text-2xl">Current User: </h1>
                         
                 <h2>First Name: {userData.first_name}</h2>
 

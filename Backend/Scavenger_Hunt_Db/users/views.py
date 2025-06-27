@@ -63,6 +63,7 @@ def userInfo(request, id):
         'last_name': myuser.last_name,
         'email': myuser.email,
         'username': myuser.username,
+        'password': myuser.password,
     }
     return JsonResponse(serializer.data)
 

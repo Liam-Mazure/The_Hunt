@@ -23,13 +23,16 @@ class CreateHunt(APIView):
         if serializer.is_valid():
             id = serializer.validated_data.get('id')
             title = serializer.validated_data.get('title')
-            total_steps = serializer.validated_data.get('total_steps')
+
+            # Fetch the User instance using the username provided
+            author_username = request.user.username  # Since the user is already authenticated
+            author = User.objects.get(username=author_username)  # This fetches the User instance
 
             queryset = Hunt.objects.filter(title=title)
             if queryset.exists():
                 return Response({"error" : "A Hunt with this title already exists"})
             else:
-                hunt = Hunt(title=title, total_steps=total_steps)
+                hunt = Hunt(title=title, author=author)
         hunt.save()
         return Response({"message" : "Hunt Created Successfully", "id": hunt.id})
 
@@ -122,7 +125,7 @@ def play(request):
 
 def list_all_hunts(request):
     allhunts = Hunt.objects.all()
-    # print(f"AllHunts: {allhunts}")
+    #print(f"AllHunts: {allhunts}")
     serializer = HuntSerializer(allhunts, many=True)
     data = {
         'allhunts' : allhunts,
@@ -136,6 +139,7 @@ def list_hunt(request, id):
     data = {
         'title': hunt.title,
         'total_steps':hunt.total_steps,
+        'author': hunt.author,
     }
     return JsonResponse(serializer.data)
 
