@@ -28,9 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-gsjp%%v4-uc4rt04==9i+6$gozx0r1^tnvkws7s*!m$q+5yjm3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+#DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+CORS_ALLOWED_ORIGINS = [
+    "https://the-hunt-2hk3.onrender.com",
+]
 
 
 # Application definition
@@ -77,7 +80,7 @@ SIMPLE_JWT = {
     # "BLACKLIST_AFTER_ROTATION": True,
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
+#CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'Scavenger_Hunt_Db.urls'
