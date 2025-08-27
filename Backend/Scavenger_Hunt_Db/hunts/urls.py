@@ -1,6 +1,6 @@
 from django.urls import path
 from .  import views
-from hunts.views import CreateHunt,CreateHuntStep,DeleteHuntStep,GetHuntStep, UpdateHunt, UpdateHuntStep
+from hunts.views import CreateHunt,CreateHuntStep,DeleteHuntStep,GetHuntStep, UpdateHunt, UpdateHuntStep, LikeHunt
 
 urlpatterns = [
     path("create/", CreateHunt.as_view(), name = "createHunt"),
@@ -11,5 +11,6 @@ urlpatterns = [
     path("play/", views.play, name = "play"),
     path("list/", views.list_all_hunts, name = "list_all_hunts"),
     path("list/<int:hunt_id>", GetHuntStep.as_view(), name = "list_hunt_step"),
+    path('<int:hunt_id>/like/', LikeHunt.as_view(), name = "like-hunt")
     
 ]

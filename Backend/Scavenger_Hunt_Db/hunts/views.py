@@ -154,3 +154,32 @@ class GetHuntStep(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Hunt.DoesNotExist():
             return Response({'error': 'Hunt Not Found'}, status = status.HTTP_404_NOT_FOUND)
+        
+class HuntScore(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, hunt_id):
+        hunt = Hunt.objects.get(id=hunt_id)
+        user = request.user
+
+        score = request.score
+
+        result = HuntScore.objects.create(user=user, hunt=hunt, score=score)
+
+        return Response({
+            "message": "Hunt Finished!",
+            "score": score
+        })
+
+class LikeHunt(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, hunt_id):
+        hunt = Hunt.objects.get(id=hunt_id)
+        user = request.user
+
+        if user in hunt.liked_by.all():
+            hunt.liked_by.remove(user)
+            return Response({'message': 'Hunt unliked'})
+        else:
+            hunt.liked_by.add(user)
+            return Response({'message': 'Hunt liked'})
