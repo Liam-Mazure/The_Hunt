@@ -66,12 +66,9 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, i
         }
         console.log("Submitted Form Data: ", formData)
         try{
-            const response = await api.post(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/createstep/`, formData,
-            {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            const response = await api.post(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/createstep/`, 
+                formData
+            );
 
             if(response && response.data){
                 alert('Step Created')
