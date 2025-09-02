@@ -42,7 +42,7 @@ function CreateHunt() {
     const handleAddStep = async (stepCount) => {
         try{
 
-            const response = await axios.patch(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/update/${huntId}`)
+            const response = await api.patch(`${import.meta.env.VITE_APP_BACKEND_URL}/hunt/update/${huntId}`)
 
             console.log('Step added: ', response.data)
             if(response.data && response){
