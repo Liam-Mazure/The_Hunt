@@ -38,18 +38,18 @@ class CreateHunt(APIView):
 
 class CreateHuntStep(APIView):
     stepSerializer_class = HuntStepsSerializer
+    permissions_classes = [IsAuthenticated]
     def post(self, request):
+        print("Authenticated User: ", request.user)
+        print("Request Data: ", request.data)
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
         serializer = self.stepSerializer_class(data=request.data)
         if serializer.is_valid():
             print("serializer validated data: ", serializer.validated_data)
             data = serializer.validated_data
-            hunt_id = data.get('hunt')
-            try:
-                hunt = Hunt.objects.get(id=hunt_id)
-            except Hunt.DoesNotExist:
-                return Response({"error": "Hunt not found"}, status=404)
+            hunt = data.get('hunt')
+
             step = data.get('step')
             clue = data.get('clue')
             img = data.get('img')
