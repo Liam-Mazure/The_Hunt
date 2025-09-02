@@ -47,7 +47,7 @@ class CreateHuntStep(APIView):
             data = serializer.validated_data
             hunt_id = data.get('hunt')
             try:
-                hunt = Hunt.objects.get(id=hunt_id.id)
+                hunt = Hunt.objects.get(id=hunt_id)
             except Hunt.DoesNotExist:
                 return Response({"error": "Hunt not found"}, status=404)
             step = data.get('step')
@@ -134,7 +134,7 @@ def list_all_hunts(request):
 
 def list_hunt(request, id):
     hunt = Hunt.objects.get(id=id)
-    serializer = HuntSerializer(hunt, many=True)
+    serializer = HuntSerializer(hunt)
     template = loader.get_template('./allHunts.html')
     data = {
         'title': hunt.title,
@@ -161,7 +161,7 @@ class HuntScore(APIView):
         hunt = Hunt.objects.get(id=hunt_id)
         user = request.user
 
-        score = request.score
+        score = request.data.get('score')
 
         result = HuntScore.objects.create(user=user, hunt=hunt, score=score)
 
