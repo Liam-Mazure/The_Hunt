@@ -168,14 +168,16 @@ USE_I18N = True
 USE_TZ = True
 
 
+AWS_S3_CUSTOM_DOMAIN=f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}/static/"
+STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
 
 #Media-Files(user-upoaded)
-MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}/media/"
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
 MEDIA_ROOT = BASE_DIR/"media"
 
 # Default primary key field type
