@@ -43,30 +43,33 @@ class CreateHuntStep(APIView):
     def post(self, request):
         print("Authenticated User: ", request.user)
         print("Request Data: ", request.data)
-
-        if not self.request.session.exists(self.request.session.session_key):
-            self.request.session.create()
+        print("Requested FILES: ", request.FILES)
 
         serializer = self.stepSerializer_class(data=request.data)
         if serializer.is_valid():
-            print("serializer validated data: ", serializer.validated_data)
-            data = serializer.validated_data
-            hunt = data.get('hunt')
+            step = serializer.save()
+            return Response({
+                "message": "Hunt Step Created Successfully",
+                "step": HuntStepsSerializer(step, context={"request":request}).data
+            })
+            # print("serializer validated data: ", serializer.validated_data)
+            # data = serializer.validated_data
+            # hunt = data.get('hunt')
 
-            step = data.get('step')
-            clue = data.get('clue')
-            img = data.get('img')
-            hint = data.get('hint')
+            # step = data.get('step')
+            # clue = data.get('clue')
+            # img = data.get('img')
+            # hint = data.get('hint')
 
-            queryset = HuntStep.objects.filter(clue=clue)
-            if queryset.exists():
-                return Response({"error" : "A step with this clue already exists"})
-            else:
-                step = HuntStep(hunt=hunt, step=step, clue=clue, img=img, hint=hint)
-                print(f"saving step: {step}")
-                step.save()
-                return Response({"message" : "Hunt Step Created Successfully"})
-        return Response({"error" : "Invalid Data", "Details": serializer.errors})
+            # queryset = HuntStep.objects.filter(clue=clue)
+            # if queryset.exists():
+            #     return Response({"error" : "A step with this clue already exists"})
+            # else:
+            #     step = HuntStep(hunt=hunt, step=step, clue=clue, img=img, hint=hint)
+            #     print(f"saving step: {step}")
+            #     step.save()
+            #     return Response({"message" : "Hunt Step Created Successfully"})
+        return Response({"error" : "Invalid Data", "Details": serializer.errors}, status=400)
 
 class DeleteHuntStep(APIView):
     permission_classes = [IsAuthenticated]
