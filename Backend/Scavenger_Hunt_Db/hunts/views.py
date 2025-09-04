@@ -151,7 +151,8 @@ class GetHuntStep(APIView):
     def get(self, request, hunt_id):
         try:
             hunt = Hunt.objects.get(id=hunt_id)
-            serializer = HuntSerializer(hunt, context={"request": request})
+            steps = HuntStep.objects.filter(hunt=hunt)
+            serializer = HuntStepsSerializer(steps, many=True, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Hunt.DoesNotExist:
             return Response({'error': 'Hunt Not Found'}, status=status.HTTP_404_NOT_FOUND)
