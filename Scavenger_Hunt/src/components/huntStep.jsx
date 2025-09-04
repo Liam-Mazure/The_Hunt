@@ -169,7 +169,7 @@ function Huntstep({stepId, clue, hint, img, onDelete, onSave, isSaved, huntId, i
                 {uploadImg ? (
                     <img className = "border-2 border-yellow-500 rounded" src={URL.createObjectURL(uploadImg)} alt="No Img Uploaded"/>
                 ) : stepData.img && (
-                    <img className = "border-2 border-yellow-500 rounded" src={stepData.img} alt="No Img Uploaded"/>
+                    <img className = "border-2 border-yellow-500 rounded" src={stepData.img_url} alt="No Img Uploaded"/>
                 )}
 
                 <label htmlFor = "clue">Clue: </label>
