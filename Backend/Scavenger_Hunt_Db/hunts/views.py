@@ -46,7 +46,7 @@ class CreateHuntStep(APIView):
 
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
-            
+
         serializer = self.stepSerializer_class(data=request.data)
         if serializer.is_valid():
             print("serializer validated data: ", serializer.validated_data)
@@ -151,12 +151,10 @@ class GetHuntStep(APIView):
     def get(self, request, hunt_id):
         try:
             hunt = Hunt.objects.get(id=hunt_id)
-            steps = HuntStep.objects.filter(hunt=hunt)
-            serializer = HuntStepsSerializer(steps, many=True)
-
+            serializer = HuntSerializer(hunt, context={"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except Hunt.DoesNotExist():
-            return Response({'error': 'Hunt Not Found'}, status = status.HTTP_404_NOT_FOUND)
+        except Hunt.DoesNotExist:
+            return Response({'error': 'Hunt Not Found'}, status=status.HTTP_404_NOT_FOUND)
         
 class HuntScore(APIView):
     permission_classes = [IsAuthenticated]

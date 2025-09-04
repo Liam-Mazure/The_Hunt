@@ -17,6 +17,7 @@ class HuntStepsSerializer(serializers.ModelSerializer):
 class HuntSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source = 'author.username', read_only = True)
     total_steps = serializers.SerializerMethodField()
+    hunt_step = HuntStepsSerializer(many=True,read_only=True,source='huntstep_set')
     class Meta:
         model = Hunt
         fields = '__all__'
