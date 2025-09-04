@@ -2,14 +2,17 @@ from rest_framework import serializers
 from .models import *
 
 class HuntStepsSerializer(serializers.ModelSerializer):
-    img = serializers.SerializerMethodField()
+    img_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = HuntStep
-        fields = '__all__'
-        
-    def get_img(self,obj):
-        return obj.img.url if obj.img else None
+        fields = ['id', 'hunt', 'step', 'clue', 'img', 'hint', 'img_url']
+
+    def get_img_url(self,obj):
+        request = self.context.get("request")
+        if obj.img and hasattr(obj.img, "url"):
+            return request.build_absolute_uri(obj.img.url) if request else obj.img.url
+        return None
 
 class HuntSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source = 'author.username', read_only = True)
