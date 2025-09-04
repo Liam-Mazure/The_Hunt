@@ -22,4 +22,6 @@ dist-ssr
 *.sln
 *.sw?
 
+*.env
 .env
+Backend/Scavenger_Hunt_Db/.env
