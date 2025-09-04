@@ -23,6 +23,9 @@ class HuntStep(models.Model):
     img = models.ImageField(upload_to='huntsteps/')
     hint = models.TextField(max_length = 300)
 
+    def __str__(self):
+        return f"Step {self.step} for Hunt {self.hunt.title}"
+    
 class HuntScore(models.Model):
     score = models.IntegerField(default=0)
     top_score = models.IntegerField(default=0)
