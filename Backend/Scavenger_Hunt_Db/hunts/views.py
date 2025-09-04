@@ -39,11 +39,14 @@ class CreateHunt(APIView):
 class CreateHuntStep(APIView):
     stepSerializer_class = HuntStepsSerializer
     permissions_classes = [IsAuthenticated]
+
     def post(self, request):
         print("Authenticated User: ", request.user)
         print("Request Data: ", request.data)
+
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
+            
         serializer = self.stepSerializer_class(data=request.data)
         if serializer.is_valid():
             print("serializer validated data: ", serializer.validated_data)
