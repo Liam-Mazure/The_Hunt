@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenRefreshView
 from users.views import CustomTokenObtainPairView
-from hunts.views import TestS3View
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/', include("users.urls")),
@@ -28,7 +28,6 @@ urlpatterns = [
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api-auth/', include("rest_framework.urls")),
-    path('test-s3/', TestS3View.as_view(), name='test-s3'),
 ]
 
 if settings.DEBUG:
