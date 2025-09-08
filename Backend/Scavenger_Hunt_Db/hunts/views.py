@@ -50,58 +50,129 @@ class CreateHuntStep(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request):
+        print("=== HUNT STEP CREATION DEBUG ===")
         print("Authenticated User: ", request.user)
         print("Request Data: ", request.data)
         print("Requested FILES: ", request.FILES)
         
-        # Add AWS configuration check
-        logger.info("Checking AWS configuration...")
-        aws_check = check_aws_config()
-        if not aws_check:
-            logger.error("AWS configuration failed - this may cause upload issues")
-
+        # Check AWS configuration
+        print("=== CHECKING AWS CONFIGURATION ===")
+        aws_result = check_aws_config()
+        print(f"AWS config result: {aws_result}")
+        if not aws_result:
+            print("❌ AWS configuration failed!")
+            return Response({
+                "error": "AWS configuration failed - uploads will not work"
+            }, status=500)
+        
+        # Check if image file is present
+        if 'img' in request.FILES:
+            img_file = request.FILES['img']
+            print(f"📁 Image file details:")
+            print(f"  - Name: {img_file.name}")
+            print(f"  - Size: {img_file.size} bytes")
+            print(f"  - Content type: {img_file.content_type}")
+        else:
+            print("❌ No 'img' file found in request.FILES")
+        
+        print("=== VALIDATING SERIALIZER ===")
         serializer = self.stepSerializer_class(data=request.data)
         if serializer.is_valid():
+            print("✅ Serializer is valid")
+            print(f"Validated data: {serializer.validated_data}")
+            
             try:
-                # Log before save
-                if 'img' in request.FILES:
-                    file = request.FILES['img']
-                    logger.info(f"Attempting to upload image: {file.name} (size: {file.size} bytes)")
+                print("=== ATTEMPTING TO SAVE STEP ===")
                 
-                # Save the step (this triggers the S3 upload)
+                # Save the step (this should trigger S3 upload)
                 step = serializer.save()
+                print(f"✅ Step saved with ID: {step.id}")
                 
-                # Verify the upload worked
+                # Check the image field after saving
+                print("=== CHECKING SAVED STEP IMAGE FIELD ===")
                 if hasattr(step, 'img') and step.img:
-                    logger.info(f"Step saved with image field: {step.img.name}")
+                    print(f"✅ Step has image field: {step.img}")
+                    print(f"📍 Image name in DB: {step.img.name}")
+                    print(f"🔗 Image URL: {step.img.url}")
                     
-                    # Check if file actually exists in S3
-                    if default_storage.exists(step.img.name):
-                        logger.info(f"✓ File confirmed in S3: {step.img.name}")
-                        logger.info(f"✓ File URL: {step.img.url}")
-                    else:
-                        logger.error(f"✗ File NOT found in S3: {step.img.name}")
+                    # Verify file exists in S3
+                    print("=== VERIFYING FILE IN S3 ===")
+                    from django.core.files.storage import default_storage
+                    
+                    try:
+                        if default_storage.exists(step.img.name):
+                            print("✅ File confirmed in S3!")
+                            
+                            # Try to get file size
+                            try:
+                                file_size = default_storage.size(step.img.name)
+                                print(f"📏 File size in S3: {file_size} bytes")
+                            except Exception as e:
+                                print(f"⚠️ Could not get file size: {e}")
+                                
+                        else:
+                            print("❌ FILE NOT FOUND IN S3!")
+                            print(f"❌ Looking for file: {step.img.name}")
+                            
+                            # List what IS in the bucket
+                            print("=== LISTING S3 BUCKET CONTENTS ===")
+                            try:
+                                s3_client = boto3.client('s3')
+                                response = s3_client.list_objects_v2(
+                                    Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+                                    MaxKeys=10
+                                )
+                                if 'Contents' in response:
+                                    print("Files found in bucket:")
+                                    for obj in response['Contents']:
+                                        print(f"  - {obj['Key']}")
+                                else:
+                                    print("Bucket is completely empty")
+                            except Exception as e:
+                                print(f"❌ Error listing bucket: {e}")
+                                
+                            return Response({
+                                "error": "File upload failed - image not saved to S3",
+                                "details": f"Expected file: {step.img.name}"
+                            }, status=500)
+                            
+                    except Exception as e:
+                        print(f"❌ Error checking S3: {e}")
                         return Response({
-                            "error": "File upload failed - image not found in storage",
-                            "details": f"Expected file: {step.img.name}"
-                        }, status=400)
+                            "error": "Error verifying S3 upload",
+                            "details": str(e)
+                        }, status=500)
+                        
                 else:
-                    logger.warning("Step saved but no image field found")
+                    print("❌ No image field found on saved step!")
+                    print(f"Step attributes: {dir(step)}")
+                    return Response({
+                        "error": "Step saved but no image field found",
+                        "details": "Check your model and serializer"
+                    }, status=500)
                 
+                print("=== SUCCESS! ===")
                 return Response({
                     "message": "Hunt Step Created Successfully",
                     "step": HuntStepsSerializer(step, context={"request": request}).data
                 })
                 
             except Exception as e:
-                logger.error(f"Error during step creation: {str(e)}")
+                print(f"❌ ERROR DURING STEP CREATION: {e}")
+                print(f"❌ Error type: {type(e).__name__}")
+                import traceback
+                print(f"❌ Traceback: {traceback.format_exc()}")
                 return Response({
                     "error": "Failed to create hunt step",
                     "details": str(e)
                 }, status=500)
-        
-        logger.error(f"Serializer validation failed: {serializer.errors}")
-        return Response({"error": "Invalid Data", "Details": serializer.errors}, status=400)
+        else:
+            print("❌ Serializer validation failed")
+            print(f"❌ Errors: {serializer.errors}")
+            return Response({
+                "error": "Invalid Data", 
+                "Details": serializer.errors
+            }, status=400)
 
 class DeleteHuntStep(APIView):
     permission_classes = [IsAuthenticated]
@@ -263,7 +334,7 @@ def check_aws_config():
 # Test View for AWS
 class TestS3View(APIView):
     permission_classes = []
-    
+
     def get(self, request):
         """Test endpoint to check S3 connectivity"""
         result = check_aws_config()
