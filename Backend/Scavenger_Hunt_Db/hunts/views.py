@@ -44,6 +44,7 @@ class CreateHuntStep(APIView):
         print("Authenticated User: ", request.user)
         print("Request Data: ", request.data)
         print("Requested FILES: ", request.FILES)
+        
 
         serializer = self.stepSerializer_class(data=request.data)
         if serializer.is_valid():
