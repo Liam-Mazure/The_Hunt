@@ -35,6 +35,7 @@ AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', default='us-east-2')
 AWS_DEFAULT_ACL = 'public-read' #allow public read access
 AWS_QUERYSTRING_AUTH = False #disable signed URLs
+AWS_LOCATION = 'media'
 
 
 print("AWS BUCKET:", AWS_STORAGE_BUCKET_NAME)
