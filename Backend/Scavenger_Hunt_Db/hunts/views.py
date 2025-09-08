@@ -260,8 +260,10 @@ def check_aws_config():
         logger.error(f"✗ Credential test failed: {e}")
         return False
 
-# Test View for AWS (you can remove this later)
+# Test View for AWS
 class TestS3View(APIView):
+    permission_classes = []
+    
     def get(self, request):
         """Test endpoint to check S3 connectivity"""
         result = check_aws_config()
