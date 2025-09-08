@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import MultiPartParser, FormParser
 from .models import *
 from .serializer import *
 from rest_framework.views import APIView
@@ -39,12 +39,12 @@ class CreateHunt(APIView):
 class CreateHuntStep(APIView):
     stepSerializer_class = HuntStepsSerializer
     permissions_classes = [IsAuthenticated]
+    parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request):
         print("Authenticated User: ", request.user)
         print("Request Data: ", request.data)
         print("Requested FILES: ", request.FILES)
-        
 
         serializer = self.stepSerializer_class(data=request.data)
         if serializer.is_valid():
