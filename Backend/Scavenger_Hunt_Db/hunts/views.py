@@ -1,15 +1,23 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from rest_framework.parsers import MultiPartParser, FormParser
-from .models import *
-from .serializer import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
 from django.template import loader
+from rest_framework.parsers import MultiPartParser, FormParser
+from django.core.files.storage import default_storage
 
+
+from .models import Hunt, HuntStep, User
+from .serializer import HuntSerializer, HuntStepsSerializer
+from django.http import HttpResponse 
+
+import boto3
+from django.conf import settings
+import logging
+
+# Set up logger
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 class CreateHunt(APIView):
@@ -45,32 +53,55 @@ class CreateHuntStep(APIView):
         print("Authenticated User: ", request.user)
         print("Request Data: ", request.data)
         print("Requested FILES: ", request.FILES)
+        
+        # Add AWS configuration check
+        logger.info("Checking AWS configuration...")
+        aws_check = check_aws_config()
+        if not aws_check:
+            logger.error("AWS configuration failed - this may cause upload issues")
 
         serializer = self.stepSerializer_class(data=request.data)
         if serializer.is_valid():
-            step = serializer.save()
-            return Response({
-                "message": "Hunt Step Created Successfully",
-                "step": HuntStepsSerializer(step, context={"request":request}).data
-            })
-            # print("serializer validated data: ", serializer.validated_data)
-            # data = serializer.validated_data
-            # hunt = data.get('hunt')
-
-            # step = data.get('step')
-            # clue = data.get('clue')
-            # img = data.get('img')
-            # hint = data.get('hint')
-
-            # queryset = HuntStep.objects.filter(clue=clue)
-            # if queryset.exists():
-            #     return Response({"error" : "A step with this clue already exists"})
-            # else:
-            #     step = HuntStep(hunt=hunt, step=step, clue=clue, img=img, hint=hint)
-            #     print(f"saving step: {step}")
-            #     step.save()
-            #     return Response({"message" : "Hunt Step Created Successfully"})
-        return Response({"error" : "Invalid Data", "Details": serializer.errors}, status=400)
+            try:
+                # Log before save
+                if 'img' in request.FILES:
+                    file = request.FILES['img']
+                    logger.info(f"Attempting to upload image: {file.name} (size: {file.size} bytes)")
+                
+                # Save the step (this triggers the S3 upload)
+                step = serializer.save()
+                
+                # Verify the upload worked
+                if hasattr(step, 'img') and step.img:
+                    logger.info(f"Step saved with image field: {step.img.name}")
+                    
+                    # Check if file actually exists in S3
+                    if default_storage.exists(step.img.name):
+                        logger.info(f"✓ File confirmed in S3: {step.img.name}")
+                        logger.info(f"✓ File URL: {step.img.url}")
+                    else:
+                        logger.error(f"✗ File NOT found in S3: {step.img.name}")
+                        return Response({
+                            "error": "File upload failed - image not found in storage",
+                            "details": f"Expected file: {step.img.name}"
+                        }, status=400)
+                else:
+                    logger.warning("Step saved but no image field found")
+                
+                return Response({
+                    "message": "Hunt Step Created Successfully",
+                    "step": HuntStepsSerializer(step, context={"request": request}).data
+                })
+                
+            except Exception as e:
+                logger.error(f"Error during step creation: {str(e)}")
+                return Response({
+                    "error": "Failed to create hunt step",
+                    "details": str(e)
+                }, status=500)
+        
+        logger.error(f"Serializer validation failed: {serializer.errors}")
+        return Response({"error": "Invalid Data", "Details": serializer.errors}, status=400)
 
 class DeleteHuntStep(APIView):
     permission_classes = [IsAuthenticated]
@@ -78,14 +109,18 @@ class DeleteHuntStep(APIView):
         print(f"Trying to delete HuntStep with ID: {step_id}")
 
         try:
-            
             step = HuntStep.objects.get(id=step_id)
+            
+            # Log image deletion
+            if hasattr(step, 'img') and step.img:
+                logger.info(f"Deleting image from S3: {step.img.name}")
+            
             step.delete()
             return Response({'message':'Step Deleted'},status = status.HTTP_204_NO_CONTENT)
         except HuntStep.DoesNotExist:
             return Response({'error': 'Step Not Found'}, status = status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            print(f"Unexpected error: {e}")
+            logger.error(f"Unexpected error during deletion: {e}")
             return Response({'error': 'Server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 class UpdateHunt(APIView):
@@ -113,26 +148,40 @@ class UpdateHuntStep(APIView):
             print("Hunt Id: ", hunt_id)
             print("Step: ", step)
 
+            # Check if updating image
+            if 'img' in request.FILES:
+                file = request.FILES['img']
+                logger.info(f"Updating step image: {file.name} (size: {file.size} bytes)")
         
             serializer = HuntStepsSerializer(step, data = request.data, partial = True)
             if serializer.is_valid():
-                serializer.save()
+                updated_step = serializer.save()
+                
+                # Verify updated image if one was uploaded
+                if 'img' in request.FILES and hasattr(updated_step, 'img') and updated_step.img:
+                    if default_storage.exists(updated_step.img.name):
+                        logger.info(f"✓ Updated image confirmed in S3: {updated_step.img.name}")
+                    else:
+                        logger.error(f"✗ Updated image NOT found in S3: {updated_step.img.name}")
+                
                 return Response(serializer.data)
-            print("serializer Error: ", serializer.errors)
+            
+            logger.error(f"Update serializer validation failed: {serializer.errors}")
             return Response(serializer.errors, status = 400)
         
         except Hunt.DoesNotExist:
             return Response({'error': 'Hunt not found.'}, status=404)
         except HuntStep.DoesNotExist:
             return Response({'error': 'Step not found for this hunt.'}, status=404)
+        except Exception as e:
+            logger.error(f"Error during step update: {str(e)}")
+            return Response({'error': 'Server error'}, status=500)
 
 def play(request):
     return HttpResponse("Play Hunt")
 
-
 def list_all_hunts(request):
     allhunts = Hunt.objects.all()
-    #print(f"AllHunts: {allhunts}")
     serializer = HuntSerializer(allhunts, many=True)
     data = {
         'allhunts' : allhunts,
@@ -149,7 +198,6 @@ def list_hunt(request, id):
         'author': hunt.author,
     }
     return JsonResponse(serializer.data)
-
 
 class GetHuntStep(APIView):
     def get(self, request, hunt_id):
@@ -189,3 +237,56 @@ class LikeHunt(APIView):
         else:
             hunt.liked_by.add(user)
             return Response({'message': 'Hunt liked'})
+
+# AWS Configuration Check Function
+def check_aws_config():
+    """Debug function to verify AWS configuration"""
+    try:
+        logger.info(f"Checking AWS config - Bucket: {settings.AWS_STORAGE_BUCKET_NAME}")
+        logger.info(f"Region: {getattr(settings, 'AWS_S3_REGION_NAME', 'Not set')}")
+        logger.info(f"Access Key: {settings.AWS_ACCESS_KEY_ID[:4]}****")
+        
+        # Test credentials
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=getattr(settings, 'AWS_S3_REGION_NAME', None)
+        )
+        s3_client.head_bucket(Bucket=settings.AWS_STORAGE_BUCKET_NAME)
+        logger.info("✓ Credentials and bucket access verified")
+        return True
+    except Exception as e:
+        logger.error(f"✗ Credential test failed: {e}")
+        return False
+
+# Test View for AWS (you can remove this later)
+class TestS3View(APIView):
+    def get(self, request):
+        """Test endpoint to check S3 connectivity"""
+        result = check_aws_config()
+        
+        if result:
+            # Try to list some objects
+            try:
+                s3_client = boto3.client('s3')
+                response = s3_client.list_objects_v2(
+                    Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+                    MaxKeys=5
+                )
+                objects = response.get('Contents', [])
+                return Response({
+                    "status": "success",
+                    "message": "S3 connection working",
+                    "sample_objects": [obj['Key'] for obj in objects[:3]]
+                })
+            except Exception as e:
+                return Response({
+                    "status": "error",
+                    "message": f"S3 list failed: {str(e)}"
+                })
+        else:
+            return Response({
+                "status": "error", 
+                "message": "AWS configuration failed"
+            })
