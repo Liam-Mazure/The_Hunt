@@ -42,8 +42,7 @@ class CreateUser(APIView):
             else:
                 user = User(first_name = first_name, last_name = last_name, email = email, username = username, is_active = True)
                 user.set_password(password)
-        
-        user.save()
+                user.save()
         return Response({"message": "User created Successfully"}, status=status.HTTP_201_CREATED)
     
 def allUsers(request):

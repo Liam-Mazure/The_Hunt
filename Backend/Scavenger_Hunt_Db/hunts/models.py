@@ -1,5 +1,10 @@
 from django.db import models
 from users.models import User
+from django.conf import settings
+
+def get_s3_storage():
+    from storages.backends.s3boto3 import S3Boto3Storage
+    return S3Boto3Storage()
 
 
 class Hunt(models.Model):
@@ -20,7 +25,7 @@ class HuntStep(models.Model):
     hunt = models.ForeignKey(Hunt, related_name='hunt_steps', on_delete=models.CASCADE)
     step = models.IntegerField()
     clue = models.TextField(max_length=500)
-    img = models.ImageField(upload_to='huntsteps/')
+    img = models.ImageField(upload_to='huntsteps/', storage=get_s3_storage)
     hint = models.TextField(max_length = 300)
 
     def __str__(self):

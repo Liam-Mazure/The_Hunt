@@ -50,129 +50,24 @@ class CreateHuntStep(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request):
-        print("=== HUNT STEP CREATION DEBUG ===")
-        print("Authenticated User: ", request.user)
-        print("Request Data: ", request.data)
-        print("Requested FILES: ", request.FILES)
-        
-        # Check AWS configuration
-        print("=== CHECKING AWS CONFIGURATION ===")
-        aws_result = check_aws_config()
-        print(f"AWS config result: {aws_result}")
-        if not aws_result:
-            print("❌ AWS configuration failed!")
-            return Response({
-                "error": "AWS configuration failed - uploads will not work"
-            }, status=500)
-        
-        # Check if image file is present
-        if 'img' in request.FILES:
-            img_file = request.FILES['img']
-            print(f"📁 Image file details:")
-            print(f"  - Name: {img_file.name}")
-            print(f"  - Size: {img_file.size} bytes")
-            print(f"  - Content type: {img_file.content_type}")
-        else:
-            print("❌ No 'img' file found in request.FILES")
-        
-        print("=== VALIDATING SERIALIZER ===")
         serializer = self.stepSerializer_class(data=request.data)
         if serializer.is_valid():
-            print("✅ Serializer is valid")
-            print(f"Validated data: {serializer.validated_data}")
-            
             try:
-                print("=== ATTEMPTING TO SAVE STEP ===")
-                
-                # Save the step (this should trigger S3 upload)
                 step = serializer.save()
-                print(f"✅ Step saved with ID: {step.id}")
-                
-                # Check the image field after saving
-                print("=== CHECKING SAVED STEP IMAGE FIELD ===")
-                if hasattr(step, 'img') and step.img:
-                    print(f"✅ Step has image field: {step.img}")
-                    print(f"📍 Image name in DB: {step.img.name}")
-                    print(f"🔗 Image URL: {step.img.url}")
-                    
-                    # Verify file exists in S3
-                    print("=== VERIFYING FILE IN S3 ===")
-                    from django.core.files.storage import default_storage
-                    
-                    try:
-                        if default_storage.exists(step.img.name):
-                            print("✅ File confirmed in S3!")
-                            
-                            # Try to get file size
-                            try:
-                                file_size = default_storage.size(step.img.name)
-                                print(f"📏 File size in S3: {file_size} bytes")
-                            except Exception as e:
-                                print(f"⚠️ Could not get file size: {e}")
-                                
-                        else:
-                            print("❌ FILE NOT FOUND IN S3!")
-                            print(f"❌ Looking for file: {step.img.name}")
-                            
-                            # List what IS in the bucket
-                            print("=== LISTING S3 BUCKET CONTENTS ===")
-                            try:
-                                s3_client = boto3.client('s3')
-                                response = s3_client.list_objects_v2(
-                                    Bucket=settings.AWS_STORAGE_BUCKET_NAME,
-                                    MaxKeys=10
-                                )
-                                if 'Contents' in response:
-                                    print("Files found in bucket:")
-                                    for obj in response['Contents']:
-                                        print(f"  - {obj['Key']}")
-                                else:
-                                    print("Bucket is completely empty")
-                            except Exception as e:
-                                print(f"❌ Error listing bucket: {e}")
-                                
-                            return Response({
-                                "error": "File upload failed - image not saved to S3",
-                                "details": f"Expected file: {step.img.name}"
-                            }, status=500)
-                            
-                    except Exception as e:
-                        print(f"❌ Error checking S3: {e}")
-                        return Response({
-                            "error": "Error verifying S3 upload",
-                            "details": str(e)
-                        }, status=500)
-                        
-                else:
-                    print("❌ No image field found on saved step!")
-                    print(f"Step attributes: {dir(step)}")
-                    return Response({
-                        "error": "Step saved but no image field found",
-                        "details": "Check your model and serializer"
-                    }, status=500)
-                
-                print("=== SUCCESS! ===")
                 return Response({
                     "message": "Hunt Step Created Successfully",
                     "step": HuntStepsSerializer(step, context={"request": request}).data
-                })
-                
+                }, status=status.HTTP_201_CREATED)
             except Exception as e:
-                print(f"❌ ERROR DURING STEP CREATION: {e}")
-                print(f"❌ Error type: {type(e).__name__}")
-                import traceback
-                print(f"❌ Traceback: {traceback.format_exc()}")
                 return Response({
                     "error": "Failed to create hunt step",
                     "details": str(e)
-                }, status=500)
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         else:
-            print("❌ Serializer validation failed")
-            print(f"❌ Errors: {serializer.errors}")
             return Response({
-                "error": "Invalid Data", 
-                "Details": serializer.errors
-            }, status=400)
+                "error": "Invalid Data",
+                "details": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 class DeleteHuntStep(APIView):
     permission_classes = [IsAuthenticated]

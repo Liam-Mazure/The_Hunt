@@ -17,11 +17,10 @@ import os
 import dj_database_url
 import logging
 
-load_dotenv()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -29,20 +28,27 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
+ENVIRONMENT = os.getenv('ENVIRONMENT')
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', default='us-east-2')
+AWS_S3_CUSTOM_DOMAIN=f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 AWS_DEFAULT_ACL = 'public-read' #allow public read access
 AWS_QUERYSTRING_AUTH = False #disable signed URLs
-AWS_LOCATION = 'media'
+#AWS_LOCATION = 'media'
 
 
 print("AWS BUCKET:", AWS_STORAGE_BUCKET_NAME)
 print("AWS KEY ID:", AWS_ACCESS_KEY_ID[:4] if AWS_ACCESS_KEY_ID else None)
 
 # Use S3 for file storage
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+DEFAULT_FILE_STORAGE = 'Scavenger_Hunt_Db.storage_backends.MediaStorage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+
+#S3 cofiguration settings
+AWS_S3_FILE_OVERWRITE = False
+AWS_S3_VERIFY = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("ENVIRONMENT") != "production"
@@ -175,16 +181,18 @@ USE_I18N = True
 USE_TZ = True
 
 
-AWS_S3_CUSTOM_DOMAIN=f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_ROOT = BASE_DIR / "staticfiles"
+#Local Testing -> **Comment out**
+# STATIC_ROOT = BASE_DIR / "staticfiles"
+#Deployment
 STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
 
 #Media-Files(user-upoaded)
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+
+#Local Testing -> **Comment out**
 # MEDIA_ROOT = BASE_DIR/"media"
 
 # Default primary key field type
@@ -205,3 +213,8 @@ LOGGING = {
         'level': 'ERROR',
     },
 }
+
+print("AWS_ACCESS_KEY_ID:", AWS_ACCESS_KEY_ID)
+print("AWS_SECRET_ACCESS_KEY:", "SET" if AWS_SECRET_ACCESS_KEY else "MISSING")
+print("AWS_STORAGE_BUCKET_NAME:", AWS_STORAGE_BUCKET_NAME)
+print("DEFAULT_FILE_STORAGE:", DEFAULT_FILE_STORAGE)
