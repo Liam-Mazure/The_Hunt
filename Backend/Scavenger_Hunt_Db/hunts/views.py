@@ -16,6 +16,18 @@ import boto3
 from django.conf import settings
 import logging
 
+from django.db import connection
+
+def reset_db(request):
+    if request.GET.get("key") != "RESET123":
+        return HttpResponse("Unauthorized", status=403)
+
+    with connection.cursor() as cursor:
+        cursor.execute("DROP SCHEMA public CASCADE;")
+        cursor.execute("CREATE SCHEMA public;")
+
+    return HttpResponse("Database wiped")
+
 # Set up logger
 logger = logging.getLogger(__name__)
 
