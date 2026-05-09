@@ -1,6 +1,6 @@
 from django.urls import path
 from .  import views
-from hunts.views import CreateHunt,CreateHuntStep,DeleteHuntStep,GetHuntStep, UpdateHunt, UpdateHuntStep, LikeHunt, TestS3View, reset_db
+from hunts.views import CreateHunt,CreateHuntStep,DeleteHuntStep,GetHuntStep, UpdateHunt, UpdateHuntStep, LikeHunt, TestS3View#, reset_db
 
 urlpatterns = [
     path("create/", CreateHunt.as_view(), name = "createHunt"),
