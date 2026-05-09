@@ -23,7 +23,7 @@ class Hunt(models.Model):
     
 class HuntStep(models.Model):
     hunt = models.ForeignKey(Hunt, related_name='hunt_steps', on_delete=models.CASCADE)
-    step = models.IntegerField()
+    step = models.BigIntegerField()
     clue = models.TextField(max_length=500)
     img = models.ImageField(upload_to='huntsteps/', storage=get_s3_storage)
     hint = models.TextField(max_length = 300)
