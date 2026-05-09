@@ -53,9 +53,14 @@ AWS_S3_VERIFY = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("ENVIRONMENT") != "production"
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "the-hunt-backend.onrender.com",
+    "localhost",
+    "127.0.0.1"
+]
 CORS_ALLOWED_ORIGINS = [
-    "https://the-hunt-2hk3.onrender.com",
+    "https://the-hunt-2hk3.onrender.com",  # Your frontend URL
+    "http://localhost:5173",  # For local development
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -130,7 +135,7 @@ WSGI_APPLICATION = 'Scavenger_Hunt_Db.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if os.getenv("DATABASE_URL") == "production":
+if os.getenv("DATABASE_URL"):
     DATABASES = {
         'default': dj_database_url.config(
             default=os.getenv('DATABASE_URL'),

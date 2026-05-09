@@ -13,6 +13,6 @@ urlpatterns = [
     path("list/<int:hunt_id>", GetHuntStep.as_view(), name = "list_hunt_step"),
     path('<int:hunt_id>/like/', LikeHunt.as_view(), name = "like-hunt"),
     path('test-s3/', TestS3View.as_view(), name='test-s3'),
-    path("reset-db/", reset_db)
+    # path("reset-db/", reset_db)
     
 ]

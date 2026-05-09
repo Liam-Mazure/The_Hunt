@@ -67,6 +67,7 @@ def userInfo(request, id):
     return JsonResponse(serializer.data)
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+
     def validate(self, attrs):
         data = super().validate(attrs)
         data['id'] = self.user.id
